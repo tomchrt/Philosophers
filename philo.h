@@ -28,6 +28,7 @@ typedef struct s_philo
     int rank;
     struct s_philo *next;
     t_fork *fork;
+    pthread_t thread;
 
 }t_philo;
 

@@ -1,6 +1,19 @@
 #include "philo.h"
-void routine(t_philo *data)
+void think(t_philo *philo)
+{
+
+}
+void sleep(t_philo *philo)
+{
+
+}
+void eat(t_philo *philo)
+{
+
+}
+void routine(void *arg)
 {   
+    t_philo *data = (t_philo *)arg;
     int i;
 
     i = 0;
@@ -27,7 +40,7 @@ void add_fork(int philos_number)
     }
 }
 
-void create_philo(int philos_number)
+t_philo **create_philo(int philos_number)
 {
     t_philo **philos;
     int i;
@@ -47,25 +60,31 @@ void create_philo(int philos_number)
             philos[i]->next = philos[0];
         i++;
     }
+    //pthread_create(&tid, NULL, &routine, &(data));
     add_fork(philos_number);
+    return(philos);
 }
 
 int main(int argc, char **argv)
 {
     pthread_t tid;
+    t_philo **philos = create_philo(atoi(argv[1]));
     int i;
 
     i = 0;
     check_args_number(argc, argv);
-    while(i < atoi(argv[1]));
+    
+    while(i < atoi(argv[1]))
     {
-
+        pthread_create(&philos[i]->thread, NULL, routine, (void *)philos[i]);
+        i++;
     }
-    pthread_create(&tid, NULL, &routine, &(data));
-
-
-
-    create_philo(atoi(argv[1]));
+    i = 0;
+    while (i < atoi(argv[i]))
+    {
+        pthread_join(philos[i]->thread, NULL);
+    }
+    
     return(0);
     
 }
