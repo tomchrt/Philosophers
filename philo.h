@@ -16,6 +16,7 @@ typedef struct s_fork
 
 typedef enum e_state
 {
+    DEAD,
     EATING,
     SLEEPING,
     THINKING,
@@ -25,6 +26,8 @@ typedef struct s_philo
 {
     t_state state;
     int time_to_eat;
+    int time_to_die;
+    int time_to_sleep;
     int rank;
     struct s_philo *next;
     t_fork *fork;
@@ -36,6 +39,7 @@ t_philo **create_philo(int philos_number);
 int ft_is_number(char *str);
 int check_args_number(int argc, char **argv);
 void add_fork(int philos_number);
+ft_usleep(int usleep_time);
 
 
 
