@@ -1,16 +1,16 @@
 #include "philo.h"
-void think(t_philo *philo)
-{
+// void think(t_philo *philo)
+// {
 
-}
-void sleep(t_philo *philo)
-{
+// }
+// void sleep(t_philo *philo)
+// {
 
-}
-void eat(t_philo *philo)
-{
+// }
+// void eat(t_philo *philo)
+// {
 
-}
+// }
 void routine(void *arg)
 {   
     t_philo *data = (t_philo *)arg;
@@ -48,7 +48,7 @@ t_philo **create_philo(int philos_number)
     i = 0;
     philos = malloc(sizeof(t_philo *) * philos_number);
     if(!philos)
-        return;
+        return(NULL);
     while(i < philos_number)
     {
         philos[i] = malloc(sizeof (t_philo));
@@ -76,7 +76,7 @@ int main(int argc, char **argv)
     
     while(i < atoi(argv[1]))
     {
-        pthread_create(&philos[i]->thread, NULL, routine, (void *)philos[i]);
+        pthread_create(&philos[i]->thread, NULL, (voidroutine, (void *)philos[i]);
         i++;
     }
     i = 0;

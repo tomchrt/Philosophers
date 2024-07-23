@@ -32,7 +32,7 @@ typedef struct s_philo
 
 }t_philo;
 
-void create_philo(int philos_number);
+t_philo **create_philo(int philos_number);
 int ft_is_number(char *str);
 int check_args_number(int argc, char **argv);
 void add_fork(int philos_number);
