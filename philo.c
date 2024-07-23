@@ -83,6 +83,7 @@ int main(int argc, char **argv)
     while (i < atoi(argv[i]))
     {
         pthread_join(philos[i]->thread, NULL);
+        i++;
     }
     
     return(0);
