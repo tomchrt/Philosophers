@@ -35,11 +35,11 @@ typedef struct s_philo
 
 }t_philo;
 
-t_philo **create_philo(int philos_number);
+t_philo **create_philo(int philos_number, int time_to_die, int time_to_eat, int time_to_sleep);
 int ft_is_number(char *str);
 int check_args_number(int argc, char **argv);
 void add_fork(int philos_number);
-ft_usleep(int usleep_time);
+void ft_usleep(int usleep_time, t_philo *philo);
 
 
 

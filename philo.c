@@ -1,6 +1,6 @@
 #include "philo.h"
 //faire des setter et des getter pour securiser
-ft_usleep(int usleep_time, t_philo *philo)
+void ft_usleep(int usleep_time, t_philo *philo)
 {
     while(1)
     {
@@ -11,17 +11,20 @@ ft_usleep(int usleep_time, t_philo *philo)
 }
  void think(t_philo *philo)
 {
+    philo->state = THINKING;
     printf("Philosopher is thinking..");
-    //ft_usleep(ph)
+    ft_usleep(philo->time_to_sleep, philo);
 }
- void sleep(t_philo *philo)
+ void sleeping(t_philo *philo)
 {
+    philo->state = SLEEPING;
     printf("Philosopher is sleeping..");  
     ft_usleep(philo->time_to_sleep, philo);
 
 }
 void eat(t_philo *philo)
 {
+    philo->state = EATING;
     printf("Philosopher is eating..");
     ft_usleep(philo->time_to_eat, philo);
 }
@@ -33,7 +36,7 @@ void routine(void *arg)
     {   
         eat(data);
         think(data);
-        sleep(data);
+        sleeping(data);
     }
 }
 void add_fork(int philos_number)
