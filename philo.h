@@ -39,7 +39,7 @@ t_philo **create_philo(int philos_number, int time_to_die, int time_to_eat, int 
 int ft_is_number(char *str);
 int check_args_number(int argc, char **argv);
 void add_fork(int philos_number);
-void ft_usleep(int usleep_time, t_philo *philo);
+void ft_usleep(t_philo *philo);
 
 
 

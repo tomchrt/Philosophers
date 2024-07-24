@@ -5,9 +5,11 @@ int ft_is_number(char *str)
     int i;
 
     i = 0;
+    if(!str || str[i] == '\0')
+        return(0);
     while(str[i])
     {
-        if(str[i] <= '0' || str[i] >= '9')
+        if(str[i] < '0' || str[i] > '9')
             return(0);
         i++;
     }
@@ -20,19 +22,22 @@ int check_args_number(int argc, char **argv)
     int j;
 
     i = 1;
-   if(argc != 6)
+   if(argc != 5)
     {
+        printf("%d\n", i);
         write(2, "Wrong arguments number", 23);
-        return(0);
+        exit(EXIT_FAILURE);
     }
+        printf("coucou ok\n");
     while(i < argc)
     {
-        if((atoi(argv[i]) < 0 || atoi(argv[i]) >= INT_MAX || !ft_is_number(argv[i])))
+        if((atoi(argv[i]) < 0 ) || (atoi(argv[i]) >= INT_MAX ) || !(ft_is_number(argv[i])))
         {
-            write(1, "Input is not numbers", 21) ;
-            return(0);
+            write(2, "Input is not numbers", 21) ;
+            exit(EXIT_FAILURE);
         }
         i++;
     }
     return(1);
 }
+

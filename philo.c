@@ -1,10 +1,10 @@
 #include "philo.h"
 //faire des setter et des getter pour securiser
-void ft_usleep(int usleep_time, t_philo *philo)
+void ft_usleep(t_philo *philo)
 {
     while(1)
     {
-        usleep(usleep_time * 1000);
+        usleep(150);
         if(philo->state == DEAD)
             break;
     }
@@ -12,21 +12,21 @@ void ft_usleep(int usleep_time, t_philo *philo)
  void think(t_philo *philo)
 {
     philo->state = THINKING;
-    printf("Philosopher is thinking..");
-    ft_usleep(philo->time_to_sleep, philo);
+    //printf("Philosopher is thinking..");
+    ft_usleep(philo);
 }
  void sleeping(t_philo *philo)
 {
     philo->state = SLEEPING;
-    printf("Philosopher is sleeping..");  
-    ft_usleep(philo->time_to_sleep, philo);
+    //printf("Philosopher is sleeping..");  
+    ft_usleep(philo);
 
 }
 void eat(t_philo *philo)
 {
     philo->state = EATING;
-    printf("Philosopher is eating..");
-    ft_usleep(philo->time_to_eat, philo);
+   // printf("Philosopher is eating..");
+    ft_usleep(philo);
 }
 void routine(void *arg)
 {   
@@ -59,6 +59,7 @@ void add_fork(int philos_number)
 t_philo **create_philo(int philos_number, int time_to_die, int time_to_eat, int time_to_sleep)
 {
     t_philo **philos;
+    pthread_t tid;
     int i;
 
     i = 0;
@@ -67,7 +68,6 @@ t_philo **create_philo(int philos_number, int time_to_die, int time_to_eat, int 
         return(NULL);
     while(i < philos_number)
     {
-        
         philos[i] = malloc(sizeof (t_philo));
         philos[i]->rank = i +1;
         philos[i]->state = THINKING;
@@ -80,32 +80,32 @@ t_philo **create_philo(int philos_number, int time_to_die, int time_to_eat, int 
             philos[i]->next = philos[0];
         i++;
     }
-    //pthread_create(&tid, NULL, &routine, &(data));
+    pthread_create(&tid, NULL, &routine, &(data));
     add_fork(philos_number);
     return(philos);
 }
 
 int main(int argc, char **argv)
 {
-    pthread_t tid;
+    check_args_number(argc, argv);
     t_philo **philos = create_philo(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
     int i;
 
     i = 0;
-    check_args_number(argc, argv);
-    
     while(i < atoi(argv[1]))
     {
+       
         pthread_create(&philos[i]->thread, NULL, (void*)routine, (void *)philos[i]);
-        i++;
+        i++;        
+
     }
     i = 0;
     while (i < atoi(argv[i]))
     {
+        printf("create 2 :%d \n", i);
         pthread_join(philos[i]->thread, NULL);
         i++;
     }
-    
     return(0);
     
 }
