@@ -12,20 +12,20 @@ void ft_usleep(t_philo *philo)
  void think(t_philo *philo)
 {
     philo->state = THINKING;
-    //printf("Philosopher is thinking..");
+    printf("Philosopher is thinking..\n");
     ft_usleep(philo);
 }
  void sleeping(t_philo *philo)
 {
     philo->state = SLEEPING;
-    //printf("Philosopher is sleeping..");  
+    printf("Philosopher is sleeping..\n");  
     ft_usleep(philo);
 
 }
 void eat(t_philo *philo)
 {
     philo->state = EATING;
-   // printf("Philosopher is eating..");
+   printf("Philosopher is eating..\n");
     ft_usleep(philo);
 }
 void routine(void *arg)
@@ -55,11 +55,12 @@ void add_fork(int philos_number)
         i++;
     }
 }
+//utiliser get time of the day a chaque tour de boucle
+//struct timeval pour calculer l etemps;
 
 t_philo **create_philo(int philos_number, int time_to_die, int time_to_eat, int time_to_sleep)
 {
     t_philo **philos;
-    pthread_t tid;
     int i;
 
     i = 0;
@@ -80,7 +81,6 @@ t_philo **create_philo(int philos_number, int time_to_die, int time_to_eat, int 
             philos[i]->next = philos[0];
         i++;
     }
-    pthread_create(&tid, NULL, &routine, &(data));
     add_fork(philos_number);
     return(philos);
 }
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
     i = 0;
     while (i < atoi(argv[i]))
     {
-        printf("create 2 :%d \n", i);
+        
         pthread_join(philos[i]->thread, NULL);
         i++;
     }
