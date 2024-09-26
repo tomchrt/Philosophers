@@ -1,88 +1,148 @@
+
 #include "philo.h"
-//faire des setter et des getter pour securiser
-void ft_usleep(t_philo *philo)
-{
-    while(1)
-    {
-        usleep(150);
-        if(philo->state == DEAD)
-            break;
-    }
-}
- void think(t_philo *philo)
-{
-    philo->state = THINKING;
-    printf("Philosopher is thinking..\n");
-    ft_usleep(philo);
-}
- void sleeping(t_philo *philo)
-{
-    philo->state = SLEEPING;
-    printf("Philosopher is sleeping..\n");  
-    ft_usleep(philo);
 
-}
-void eat(t_philo *philo)
-{
-    philo->state = EATING;
-   printf("Philosopher is eating..\n");
-    ft_usleep(philo);
-}
-void routine(void *arg)
-{   
-    t_philo *data = (t_philo *)arg;
-  
-    while(1)
-    {   
-        eat(data);
-        think(data);
-        sleeping(data);
-    }
-}
-void add_fork(int philos_number)
-{
-    int i;    
-    t_fork **fork_mutex;
 
-    i = 0;
-    fork_mutex = malloc(sizeof(t_fork*) * philos_number);
-    while(i < philos_number)
-    {
-        fork_mutex[i] = malloc(sizeof(t_fork));
-        fork_mutex[i]->mutex = malloc(sizeof(pthread_mutex_t));
-        pthread_mutex_init(fork_mutex[i]->mutex, NULL);
-        fork_mutex[i]->value = 0;
-        i++;
-    }
-}
-//utiliser get time of the day a chaque tour de boucle
-//struct timeval pour calculer l etemps;
-
-t_philo **create_philo(int philos_number, int time_to_die, int time_to_eat, int time_to_sleep)
+long long	current_timestamp(void)
 {
-    t_philo **philos;
-    int i;
+	struct timeval	te;
+	long long		milliseconds;
 
-    i = 0;
-    philos = malloc(sizeof(t_philo *) * philos_number);
-    if(!philos)
-        return(NULL);
-    while(i < philos_number)
-    {
-        philos[i] = malloc(sizeof (t_philo));
-        philos[i]->rank = i +1;
-        philos[i]->state = THINKING;
-        philos[i]->time_to_eat = time_to_eat;
-        philos[i]->time_to_sleep = time_to_sleep;
-        philos[i]->time_to_die = time_to_die;
-        if (i != philos_number - 1)
-            philos[i]->next = philos[i +1];
-        else
-            philos[i]->next = philos[0];
-        i++;
-    }
-    add_fork(philos_number);
-    return(philos);
+	gettimeofday(&te, NULL);
+	milliseconds = te.tv_sec * 1000LL + te.tv_usec / 1000;
+	return (milliseconds);
+}
+
+void	ft_usleep(int ms)
+{
+	long long	start;
+	long long	end;
+
+	start = current_timestamp();
+	end = start + ms;
+	while (current_timestamp() < end)
+		usleep(100);
+}
+
+int	try_to_take_forks(t_philo *philo)
+{
+	pthread_mutex_lock(philo->left_fork->mutex);
+	if (philo->left_fork->value == 0)
+	{
+		philo->left_fork->value = 1;
+		pthread_mutex_lock(philo->right_fork->mutex);
+		if (philo->right_fork->value == 0)
+		{
+			philo->right_fork->value = 1;
+			return (1);
+		}
+		philo->left_fork->value = 0;
+		pthread_mutex_unlock(philo->right_fork->mutex);
+	}
+	pthread_mutex_unlock(philo->left_fork->mutex);
+	return (0);
+}
+
+void	eat(t_philo *philo)
+{
+	philo->state = EATING;
+	philo->last_meal_time = current_timestamp();
+	printf("%lld Philosopher %d is eating\n", current_timestamp(), philo->rank);
+	ft_usleep(philo->time_to_eat);
+	philo->left_fork->value = 0;
+	philo->right_fork->value = 0;
+	pthread_mutex_unlock(philo->left_fork->mutex);
+	pthread_mutex_unlock(philo->right_fork->mutex);
+}
+
+void	think(t_philo *philo)
+{
+	philo->state = THINKING;
+	printf("%lld Philosopher %d is thinking\n", current_timestamp(), philo->rank);
+}
+
+void	sleeping(t_philo *philo)
+{
+	philo->state = SLEEPING;
+	printf("%lld Philosopher %d is sleeping\n", current_timestamp(), philo->rank);
+	ft_usleep(philo->time_to_sleep);
+}
+int    check_dead(t_philo *philo)
+{
+    if (current_timestamp() - philo->last_meal_time > philo->time_to_die)
+		{   
+            philo->state = DEAD;
+			printf("%lld Philosopher %d died\n", current_timestamp(), philo->rank);
+            return(0);
+		}
+        return(1);
+}
+void	*routine(void *arg)
+{
+	t_philo	*philo;
+
+	philo = (t_philo *)arg;
+	while (1)
+	{	
+		if (philo->state == THINKING && try_to_take_forks(philo))
+			eat(philo);
+		else if (philo->state == EATING)
+			sleeping(philo);
+		else if (philo->state == SLEEPING)
+			think(philo);
+	}
+	return (NULL);
+}
+
+void	add_forks(t_philo **philos, int philos_number)
+{
+	int		i;
+	t_fork	**forks;
+
+	i = 0;
+	forks = malloc(sizeof(t_fork *) * philos_number);
+	while (i < philos_number)
+	{
+		forks[i] = malloc(sizeof(t_fork));
+		forks[i]->mutex = malloc(sizeof(pthread_mutex_t));
+		pthread_mutex_init(forks[i]->mutex, NULL);
+		forks[i]->value = 0;
+		i++;
+	}
+	i = 0;
+	while (i < philos_number)
+	{
+		philos[i]->left_fork = forks[i];
+		philos[i]->right_fork = forks[(i + 1) % philos_number];
+		i++;
+	}
+}
+
+t_philo	**create_philo(int philos_number, int time_to_die, int time_to_eat, int time_to_sleep)
+{
+	t_philo	**philos;
+	int		i;
+
+	philos = malloc(sizeof(t_philo *) * philos_number);
+	if (!philos)
+		return (NULL);
+	i = 0;
+	while (i < philos_number)
+	{
+		philos[i] = malloc(sizeof(t_philo));
+		philos[i]->rank = i + 1;
+		philos[i]->state = THINKING;
+		philos[i]->time_to_eat = time_to_eat;
+		philos[i]->time_to_sleep = time_to_sleep;
+		philos[i]->time_to_die = time_to_die;
+		philos[i]->last_meal_time = current_timestamp();
+		if (i != philos_number - 1)
+			philos[i]->next = philos[i + 1];
+		else
+			philos[i]->next = philos[0];
+		i++;
+	}
+	add_forks(philos, philos_number);
+	return (philos);
 }
 
 int main(int argc, char **argv)
@@ -99,7 +159,8 @@ int main(int argc, char **argv)
         i++;        
 
     }
-    i = 0;
+    if(!(check_dead(*philos)))
+        exit(EXIT_FAILURE);
     while (i < atoi(argv[i]))
     {
         

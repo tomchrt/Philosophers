@@ -28,7 +28,6 @@ int check_args_number(int argc, char **argv)
         write(2, "Wrong arguments number", 23);
         exit(EXIT_FAILURE);
     }
-        printf("coucou ok\n");
     while(i < argc)
     {
         if((atoi(argv[i]) < 0 ) || (atoi(argv[i]) >= INT_MAX ) || !(ft_is_number(argv[i])))
