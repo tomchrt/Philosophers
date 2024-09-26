@@ -30,6 +30,7 @@ typedef struct s_philo
 	int				time_to_die;
 	int				time_to_sleep;
 	int				rank;
+	int				start_time;
 	long long		last_meal_time;
 	struct s_philo	*next;
 	t_fork			*left_fork;

@@ -8,7 +8,7 @@ long long	current_timestamp(void)
 	long long		milliseconds;
 
 	gettimeofday(&te, NULL);
-	milliseconds = te.tv_sec * 1000LL + te.tv_usec / 1000;
+	milliseconds = te.tv_sec * 1000 + te.tv_usec / 1000;
 	return (milliseconds);
 }
 
@@ -44,9 +44,11 @@ int	try_to_take_forks(t_philo *philo)
 
 void	eat(t_philo *philo)
 {
+    //lock le state
 	philo->state = EATING;
 	philo->last_meal_time = current_timestamp();
-	printf("%lld Philosopher %d is eating\n", current_timestamp(), philo->rank);
+	//creer mutex que je lock quand je print
+    printf("%lld Philosopher %d is eating\n", current_timestamp(), philo->rank);
 	ft_usleep(philo->time_to_eat);
 	philo->left_fork->value = 0;
 	philo->right_fork->value = 0;
@@ -66,23 +68,22 @@ void	sleeping(t_philo *philo)
 	printf("%lld Philosopher %d is sleeping\n", current_timestamp(), philo->rank);
 	ft_usleep(philo->time_to_sleep);
 }
-int    check_dead(t_philo *philo)
-{
-    if (current_timestamp() - philo->last_meal_time > philo->time_to_die)
-		{   
-            philo->state = DEAD;
-			printf("%lld Philosopher %d died\n", current_timestamp(), philo->rank);
-            return(0);
-		}
-        return(1);
-}
+
 void	*routine(void *arg)
 {
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
 	while (1)
-	{	
+	{
+            
+        if(philo->state == DEAD)
+            exit(EXIT_FAILURE);
+		if (current_timestamp() - philo->last_meal_time > philo->time_to_die)
+		{   
+            if(philo->state == DEAD)
+			printf("%lld Philosopher %d died\n", current_timestamp(), philo->rank);
+		}
 		if (philo->state == THINKING && try_to_take_forks(philo))
 			eat(philo);
 		else if (philo->state == EATING)
@@ -159,14 +160,15 @@ int main(int argc, char **argv)
         i++;        
 
     }
-    if(!(check_dead(*philos)))
-        exit(EXIT_FAILURE);
+	
+    i = 0;
     while (i < atoi(argv[i]))
     {
         
         pthread_join(philos[i]->thread, NULL);
         i++;
     }
+    routine( *philos);
     return(0);
     
 }
