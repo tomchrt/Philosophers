@@ -6,7 +6,7 @@
 /*   By: tchareto <tchareto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 23:38:41 by tchareto          #+#    #+#             */
-/*   Updated: 2024/09/29 23:44:38 by tchareto         ###   ########.fr       */
+/*   Updated: 2024/09/30 00:01:27 by tchareto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ void eat(t_philo *philo)
     philo->state = EATING;
     philo->last_meal_time = get_elapsed_time(philo);
     safe_print(philo, "%lld Philosopher %d is eating\n", get_elapsed_time(philo), philo->rank);
+	philo->meal_count++;
     ft_usleep(philo->time_to_eat);
     philo->left_fork->value = 0;
     philo->right_fork->value = 0;
@@ -103,13 +104,14 @@ void *routine(void *arg)
         {
             philo->state = DEAD;
             safe_print(philo, "%lld Philosopher %d died\n", get_elapsed_time(philo), philo->rank);
+			break;
         }  
-		philo->state = SLEEPING;
-				think(philo);
         if (philo->state == THINKING && try_to_take_forks(philo))
             eat(philo);
         else if (philo->state == EATING)
 				sleeping(philo);
+		else if(philo->state == SLEEPING)
+				think(philo);
       
     }
     return (NULL);

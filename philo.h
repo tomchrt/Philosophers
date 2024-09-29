@@ -34,6 +34,7 @@ typedef struct s_philo
 	struct s_philo	*next;
 	t_fork			*left_fork;
 	t_fork			*right_fork;
+	int 			meal_count;
 	pthread_t		thread;
 	long long 		start_time;
 	pthread_mutex_t *death_mutex;
