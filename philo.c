@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tchareto <tchareto@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/29 23:38:41 by tchareto          #+#    #+#             */
+/*   Updated: 2024/09/29 23:44:38 by tchareto         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 
 #include "philo.h"
 
@@ -24,32 +36,36 @@ void	ft_usleep(int ms)
 	start = current_timestamp();
 	end = start + ms;
 	while (current_timestamp() < end)
-		usleep(100);
-	//need fix
+	{
+		if(end - current_timestamp() > 1)
+			usleep(100);
+		else
+			usleep(1);
+	}
 }
 
 void safe_print(t_philo *philo, char *format, long long time, int rank)
 {
+	pthread_mutex_lock(philo->death_mutex);
 	printf(format, time, rank);
+	pthread_mutex_unlock(philo->death_mutex);
 }
 
 int	try_to_take_forks(t_philo *philo)
 {
 	pthread_mutex_lock(philo->left_fork->mutex);
-	if (philo->left_fork->value == 0)
+	pthread_mutex_lock(philo->right_fork->mutex);
+	if(philo->left_fork->value == 0 && philo->right_fork->value == 0)
 	{
 		philo->left_fork->value = 1;
-		pthread_mutex_lock(philo->right_fork->mutex);
-		if (philo->right_fork->value == 0)
-		{
-			philo->right_fork->value = 1;
-			return (1);
-		}
-		philo->left_fork->value = 0;
-		pthread_mutex_unlock(philo->right_fork->mutex);
+		philo->right_fork->value = 1;
+    	safe_print(philo, "%lld Philosopher %d has taken a fork\n", get_elapsed_time(philo), philo->rank);
+    	safe_print(philo, "%lld Philosopher %d has taken a fork\n", get_elapsed_time(philo), philo->rank);
+		return(1);
 	}
 	pthread_mutex_unlock(philo->left_fork->mutex);
-	return (0);
+	pthread_mutex_unlock(philo->right_fork->mutex);
+	return(0);
 }
 
 void eat(t_philo *philo)
@@ -87,13 +103,14 @@ void *routine(void *arg)
         {
             philo->state = DEAD;
             safe_print(philo, "%lld Philosopher %d died\n", get_elapsed_time(philo), philo->rank);
-        }
+        }  
+		philo->state = SLEEPING;
+				think(philo);
         if (philo->state == THINKING && try_to_take_forks(philo))
             eat(philo);
         else if (philo->state == EATING)
 				sleeping(philo);
-        else if (philo->state == SLEEPING)
-				think(philo);
+      
     }
     return (NULL);
 }
@@ -141,6 +158,8 @@ t_philo	**create_philo(int philos_number, int time_to_die, int time_to_eat, int 
 		philos[i]->time_to_sleep = time_to_sleep;
 		philos[i]->time_to_die = time_to_die;
 		philos[i]->last_meal_time = current_timestamp();
+		philos[i]->start_time = current_timestamp();
+		philos[i]->death_mutex = malloc(sizeof(pthread_mutex_t));
 		if (i != philos_number - 1)
 			philos[i]->next = philos[i + 1];
 		else
@@ -163,7 +182,6 @@ int main(int argc, char **argv)
         pthread_create(&philos[i]->thread, NULL, (void*)routine, (void *)philos[i]);
         i++;        
     }
-	printf("main 1\n");
     i = 0;
     while (i < atoi(argv[i]))
     {
@@ -171,7 +189,6 @@ int main(int argc, char **argv)
         i++;
     }
     routine( *philos);
-	printf("main 2\n");
     return(0);
     
 }

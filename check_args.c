@@ -19,7 +19,6 @@ int ft_is_number(char *str)
 int check_args_number(int argc, char **argv)
 {
     int i;
-    int j;
 
     i = 1;
    if(argc != 5)
