@@ -6,7 +6,7 @@
 /*   By: tchareto <tchareto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 23:38:41 by tchareto          #+#    #+#             */
-/*   Updated: 2024/09/30 00:01:27 by tchareto         ###   ########.fr       */
+/*   Updated: 2024/09/30 00:28:34 by tchareto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 
 long long	current_timestamp(void)
-{
+{q
 	struct timeval	te;
 	long long		milliseconds;
 
@@ -106,6 +106,7 @@ void *routine(void *arg)
             safe_print(philo, "%lld Philosopher %d died\n", get_elapsed_time(philo), philo->rank);
 			break;
         }  
+		pthread_mutex_unlock(philo->death_mutex);
         if (philo->state == THINKING && try_to_take_forks(philo))
             eat(philo);
         else if (philo->state == EATING)
