@@ -11,6 +11,10 @@ long long	current_timestamp(void)
 	milliseconds = te.tv_sec * 1000 + te.tv_usec / 1000;
 	return (milliseconds);
 }
+long long get_elapsed_time(t_philo *philo)
+{
+    return current_timestamp() - philo->start_time;
+}
 
 void	ft_usleep(int ms)
 {
@@ -21,6 +25,12 @@ void	ft_usleep(int ms)
 	end = start + ms;
 	while (current_timestamp() < end)
 		usleep(100);
+	//need fix
+}
+
+void safe_print(t_philo *philo, char *format, long long time, int rank)
+{
+	printf(format, time, rank);
 }
 
 int	try_to_take_forks(t_philo *philo)
@@ -42,57 +52,52 @@ int	try_to_take_forks(t_philo *philo)
 	return (0);
 }
 
-void	eat(t_philo *philo)
+void eat(t_philo *philo)
 {
-    //lock le state
-	philo->state = EATING;
-	philo->last_meal_time = current_timestamp();
-	//creer mutex que je lock quand je print
-    printf("%lld Philosopher %d is eating\n", current_timestamp(), philo->rank);
-	ft_usleep(philo->time_to_eat);
-	philo->left_fork->value = 0;
-	philo->right_fork->value = 0;
-	pthread_mutex_unlock(philo->left_fork->mutex);
-	pthread_mutex_unlock(philo->right_fork->mutex);
+    philo->state = EATING;
+    philo->last_meal_time = get_elapsed_time(philo);
+    safe_print(philo, "%lld Philosopher %d is eating\n", get_elapsed_time(philo), philo->rank);
+    ft_usleep(philo->time_to_eat);
+    philo->left_fork->value = 0;
+    philo->right_fork->value = 0;
+    pthread_mutex_unlock(philo->left_fork->mutex);
+    pthread_mutex_unlock(philo->right_fork->mutex);
 }
-
 void	think(t_philo *philo)
 {
 	philo->state = THINKING;
-	printf("%lld Philosopher %d is thinking\n", current_timestamp(), philo->rank);
+    safe_print(philo, "%lld Philosopher %d is thinking\n", get_elapsed_time(philo), philo->rank);
 }
 
 void	sleeping(t_philo *philo)
 {
 	philo->state = SLEEPING;
-	printf("%lld Philosopher %d is sleeping\n", current_timestamp(), philo->rank);
+    safe_print(philo, "%lld Philosopher %d is sleeping\n", get_elapsed_time(philo), philo->rank);
 	ft_usleep(philo->time_to_sleep);
 }
 
-void	*routine(void *arg)
+void *routine(void *arg)
 {
-	t_philo	*philo;
+    t_philo *philo;
 
-	philo = (t_philo *)arg;
-	while (1)
-	{
-            
-        if(philo->state == DEAD)
-            exit(EXIT_FAILURE);
-		if (current_timestamp() - philo->last_meal_time > philo->time_to_die)
-		{   
-            if(philo->state == DEAD)
-			printf("%lld Philosopher %d died\n", current_timestamp(), philo->rank);
-		}
-		if (philo->state == THINKING && try_to_take_forks(philo))
-			eat(philo);
-		else if (philo->state == EATING)
-			sleeping(philo);
-		else if (philo->state == SLEEPING)
-			think(philo);
-	}
-	return (NULL);
+    philo = (t_philo *)arg;
+    while (1)
+    {
+        if (get_elapsed_time(philo) - philo->last_meal_time > philo->time_to_die)
+        {
+            philo->state = DEAD;
+            safe_print(philo, "%lld Philosopher %d died\n", get_elapsed_time(philo), philo->rank);
+        }
+        if (philo->state == THINKING && try_to_take_forks(philo))
+            eat(philo);
+        else if (philo->state == EATING)
+				sleeping(philo);
+        else if (philo->state == SLEEPING)
+				think(philo);
+    }
+    return (NULL);
 }
+
 
 void	add_forks(t_philo **philos, int philos_number)
 {
@@ -151,24 +156,22 @@ int main(int argc, char **argv)
     check_args_number(argc, argv);
     t_philo **philos = create_philo(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
     int i;
-
+	
     i = 0;
     while(i < atoi(argv[1]))
     {
-       
         pthread_create(&philos[i]->thread, NULL, (void*)routine, (void *)philos[i]);
         i++;        
-
     }
-	
+	printf("main 1\n");
     i = 0;
     while (i < atoi(argv[i]))
     {
-        
         pthread_join(philos[i]->thread, NULL);
         i++;
     }
     routine( *philos);
+	printf("main 2\n");
     return(0);
     
 }
