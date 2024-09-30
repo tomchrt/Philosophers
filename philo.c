@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tchareto <tchareto@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/30 03:53:23 by tchareto          #+#    #+#             */
+/*   Updated: 2024/09/30 17:51:22 by tchareto         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 long long	current_timestamp(void)
@@ -71,10 +83,6 @@ void	eat(t_philo *philo)
 	philo->right_fork->value = 0;
 	pthread_mutex_unlock(philo->left_fork->mutex);
 	pthread_mutex_unlock(philo->right_fork->mutex);
-
-	// DEBUG: Afficher les temps et repas après avoir mangé
-	printf("Philosopher %d ate. Last meal time: %lld, Time to die: %d\n", 
-		philo->rank, philo->last_meal_time, philo->time_to_die);
 }
 
 void	think(t_philo *philo)
@@ -90,10 +98,6 @@ void	sleeping(t_philo *philo)
 	safe_print(philo, "%lld Philosopher %d is sleeping\n",
 		get_elapsed_time(philo), philo->rank);
 	ft_usleep(philo->time_to_sleep);
-
-	// DEBUG: Afficher les états pendant le sommeil
-	printf("Philosopher %d is sleeping. Time to sleep: %d ms\n", 
-		philo->rank, philo->time_to_sleep);
 }
 void	*routine(void *arg)
 {
@@ -109,7 +113,7 @@ void	*routine(void *arg)
             printf("OUI");
 			philo->state = DEAD;
 			safe_print(philo, "%lld Philosopher %d died\n",
-				get_elapsed_time(philo), philo->rank);
+			get_elapsed_time(philo), philo->rank);
 			pthread_mutex_unlock(philo->death_mutex);
 			return (NULL);  
 		}
@@ -189,50 +193,29 @@ int	main(int argc, char **argv)
 {
 	t_philo	**philos;
 	int		i;
-	int		num_philos;
 	int		all_alive;
 
-	if (argc < 5 || argc > 6)
-	{
-		printf("Usage: %s number_of_philosophers time_to_die time_to_eat \
-			time_to_sleep [number_of_times_each_philosopher_must_eat]\n", argv[0]);
-		return (1);
-	}
-	num_philos = atoi(argv[1]);
-	philos = create_philo(num_philos, atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
+    (void)argc;
+
+	philos = create_philo(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
 	all_alive = 1;
 	i = 0;
-	while (i < num_philos)
+	while (i < atoi(argv[1]))
 	{
 		philos[i]->start_time = current_timestamp();
 		pthread_create(&philos[i]->thread, NULL, routine, (void *)philos[i]);
 		i++;
 	}
-	while (all_alive)
-	{
-		i = 0;
-		while (i < num_philos)
-		{
-			pthread_mutex_lock(philos[i]->death_mutex);
-			if (philos[i]->state == DEAD)
-			{
-				all_alive = 0;
-				pthread_mutex_unlock(philos[i]->death_mutex);
-				break ;
-			}
-			pthread_mutex_unlock(philos[i]->death_mutex);
-			i++;
-		}
-		usleep(1000);
-	}
 	i = 0;
-	while (i < num_philos)
+	while (i < atoi(argv[1]))
 	{
 		pthread_join(philos[i]->thread, NULL);
 		i++;
 	}
 	i = 0;
-	while (i < num_philos)
+
+	//freeings
+	while (i < atoi(argv[1]))
 	{
 		pthread_mutex_destroy(philos[i]->death_mutex);
 		free(philos[i]->death_mutex);

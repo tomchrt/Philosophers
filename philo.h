@@ -38,6 +38,9 @@ typedef struct s_philo
 	pthread_t		thread;
 	long long 		start_time;
 	pthread_mutex_t *death_mutex;
+	pthread_mutex_t *print_mutex;
+
+	
 }t_philo;
 
 t_philo **create_philo(int philos_number, int time_to_die, int time_to_eat, int time_to_sleep);
