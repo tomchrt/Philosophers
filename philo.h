@@ -38,7 +38,7 @@ typedef struct s_philo
 	pthread_t		thread;
 	long long 		start_time;
 	pthread_mutex_t *death_mutex;
-	pthread_mutex_t *print_mutex;
+	//pthread_mutex_t *print_mutex;
 
 	
 }t_philo;
