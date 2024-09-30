@@ -6,7 +6,7 @@
 /*   By: tchareto <tchareto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/30 03:53:23 by tchareto          #+#    #+#             */
-/*   Updated: 2024/09/30 17:51:22 by tchareto         ###   ########.fr       */
+/*   Updated: 2024/09/30 19:02:05 by tchareto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ void	ft_usleep(int ms)
 
 void	safe_print(t_philo *philo, const char *format, long long time, int rank)
 {
+	printf("problema aqui\n");
 	pthread_mutex_lock(philo->death_mutex);
 	printf(format, time, rank);
 	pthread_mutex_unlock(philo->death_mutex);
@@ -110,12 +111,12 @@ void	*routine(void *arg)
 		long long time_since_last_meal = get_elapsed_time(philo) - philo->last_meal_time;
 		if (time_since_last_meal >= philo->time_to_die)
 		{
-            printf("OUI");
+            printf("OUI\n");
 			philo->state = DEAD;
 			safe_print(philo, "%lld Philosopher %d died\n",
 			get_elapsed_time(philo), philo->rank);
 			pthread_mutex_unlock(philo->death_mutex);
-			return (NULL);  
+			return(NULL);  
 		}
 		pthread_mutex_unlock(philo->death_mutex);
 
