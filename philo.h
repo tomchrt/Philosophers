@@ -30,16 +30,20 @@ typedef struct s_philo
 	int				time_to_die;
 	int				time_to_sleep;
 	int				rank;
+	int				*ready;
 	long long		last_meal_time;
 	struct s_philo	*next;
 	t_fork			*left_fork;
 	t_fork			*right_fork;
 	int 			meal_count;
 	pthread_t		thread;
-	long long 		start_time;
+	pthread_mutex_t *time_mutex;
+	long long 		*start_time;
 	pthread_mutex_t *death_mutex;
-	//pthread_mutex_t *print_mutex;
-
+	pthread_mutex_t *print_mutex;
+	pthread_mutex_t *ready_mutex;
+	
+	// pthread_mutex_t *fork_mutex;
 	
 }t_philo;
 
