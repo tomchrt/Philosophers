@@ -8,44 +8,44 @@
 #include "stdio.h"
 #include "sys/time.h"
 
-typedef struct s_fork
+typedef struct s_rules
 {
-    int value;
-    pthread_mutex_t *mutex;
+	int philo_number;
+	int time_to_eat;
+	int time_to_die;
+	int time_to_sleep;
+	int meals_to_eat;
+}t_rules;
 
-}t_fork;
 
-typedef enum e_state
+typedef struct s_dinner
 {
-    DEAD,
-    EATING,
-    SLEEPING,
-    THINKING,
-}t_state;
+	struct s_philo		*philo;
+	t_rules 			rules;
+	time_t 				start_time;
+	pthread_mutex_t 	dead_mutex;
+	pthread_mutex_t 	ready_mutex;
+	pthread_mutex_t		print_mutex;
+	int					dead;
+	int					ready;
+
+}	t_dinner;
 
 typedef struct s_philo
 {
-	t_state			state;
-	int				time_to_eat;
-	int				time_to_die;
-	int				time_to_sleep;
-	int				rank;
-	int				*ready;
-	long long		last_meal_time;
-	struct s_philo	*next;
-	t_fork			*left_fork;
-	t_fork			*right_fork;
-	int 			meal_count;
 	pthread_t		thread;
-	pthread_mutex_t *time_mutex;
-	long long 		*start_time;
-	pthread_mutex_t *death_mutex;
-	pthread_mutex_t *print_mutex;
-	pthread_mutex_t *ready_mutex;
-	
-	// pthread_mutex_t *fork_mutex;
-	
+	pthread_t		thread;
+	int				rank;
+	struct s_philo	*next;
+	time_t			last_meal;
+	int				meal_count;
+	int				fork;
+	pthread_mutex_t	fork_mutex;
+	pthread_mutex_t	meal_mutex;
+	struct s_dinner *dinner;
 }t_philo;
+
+
 
 t_philo **create_philo(int philos_number, int time_to_die, int time_to_eat, int time_to_sleep);
 int ft_is_number(char *str);
