@@ -8,8 +8,15 @@ LIB = -pthread
 
 INC = headers/philosopher.h
 
-SRCS =  check_args.c\
-                philo.c\
+SRCS =  main.c\
+               checker_init.c\
+			   check_args.c\
+			   create_philos.c\
+			   get_time.c\
+			   routine.c\
+			   print_utils.c\
+			   eating.c\
+			   dead_utils.c\
 
 OBJS =	$(SRCS:.c=.o)
 
