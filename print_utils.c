@@ -6,13 +6,11 @@
 /*   By: tchareto <tchareto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 02:00:05 by tchareto          #+#    #+#             */
-/*   Updated: 2024/10/03 09:20:25 by tchareto         ###   ########.fr       */
+/*   Updated: 2024/10/03 13:43:23 by tchareto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-
 
 int	print_info(t_philo *philo, char *info)
 {

@@ -6,7 +6,7 @@
 /*   By: tchareto <tchareto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 08:25:32 by tchareto          #+#    #+#             */
-/*   Updated: 2024/10/03 08:25:38 by tchareto         ###   ########.fr       */
+/*   Updated: 2024/10/03 14:34:43 by tchareto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,5 +78,6 @@ void				set_dead(t_philo *philo);
 void				print_dead(t_philo *philo);
 int					sleeping(t_philo *philo);
 void				free_philo(t_dinner *dinner, t_philo **philos);
+int					ft_atoi(const char *str);
 
 #endif

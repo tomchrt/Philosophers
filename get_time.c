@@ -6,7 +6,7 @@
 /*   By: tchareto <tchareto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/02 23:44:56 by tchareto          #+#    #+#             */
-/*   Updated: 2024/10/03 09:40:27 by tchareto         ###   ########.fr       */
+/*   Updated: 2024/10/03 13:43:14 by tchareto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,9 @@ void	custom_usleep(time_t time_sleep, t_philo *philo)
 
 	start = current_timestamp();
 	while (current_timestamp() - start < time_sleep && !ft_is_dead(philo))
-		usleep(1);
+	{
+		usleep(100);
+	}
 }
 
 void	get_ready(t_philo *philo)
@@ -39,4 +41,3 @@ void	get_ready(t_philo *philo)
 	philo->last_meal = current_timestamp();
 	pthread_mutex_unlock(&philo->last_meal_mutex);
 }
-

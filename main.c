@@ -6,7 +6,7 @@
 /*   By: tchareto <tchareto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/02 16:32:05 by tchareto          #+#    #+#             */
-/*   Updated: 2024/10/03 08:27:04 by tchareto         ###   ########.fr       */
+/*   Updated: 2024/10/03 14:37:54 by tchareto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	free_philo(t_dinner *dinner, t_philo **philos)
 		free(philos[i]);
 		i++;
 	}
-	free(dinner->philo);
+	free(philos);
 }
 
 int	join_threads(t_dinner *dinner, t_philo **philos)
@@ -51,6 +51,7 @@ int	join_threads(t_dinner *dinner, t_philo **philos)
 		pthread_join(philos[i]->thread, NULL);
 		i++;
 	}
+	free_philo(dinner, philos);
 	return (1);
 }
 
@@ -70,5 +71,5 @@ int	main(int argc, char **argv)
 		return (0);
 	if (!join_threads(&dinner, philos))
 		return (0);
-	return (1);
+	return (1);// 
 }

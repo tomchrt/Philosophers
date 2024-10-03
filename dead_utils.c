@@ -6,7 +6,7 @@
 /*   By: tchareto <tchareto@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 04:13:54 by tchareto          #+#    #+#             */
-/*   Updated: 2024/10/03 09:34:59 by tchareto         ###   ########.fr       */
+/*   Updated: 2024/10/03 13:13:25 by tchareto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,6 @@ void	print_dead(t_philo *philo)
 int	check_dead(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->last_meal_mutex);
-	// printf("curent time : %ld\n", current_timestamp());
-	// printf("philos last meal : %ld\n", philo->last_meal);
-	// printf("condition de con : %ld\n", current_timestamp() - philo->last_meal);
-	// printf("philos last time to eat : %d\n", philo->dinner->rules.time_to_die);
 	if ((current_timestamp()
 			- philo->last_meal) > philo->dinner->rules.time_to_die)
 	{
